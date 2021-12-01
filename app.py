@@ -34,11 +34,18 @@ def registration():
     name = request.form.get('name')
     login = request.form.get('login')
     password = request.form.get('password')
+
+    cursor.execute('SELECT login FROM service.users WHERE login = %s', (login,))
+    exist = list(cursor.fetchall())
+
+    if exist: return render_template('registration.html', error = 'Такой логин уже существует!')
     if not name or not login or not password: return render_template('registration.html', error = 'Какое-то из полей осталось пустым!')
+
 
     cursor.execute('INSERT INTO service.users (full_name, login, password) VALUES (%s, %s, %s);',
                    (str(name), str(login), str(password)))
     conn.commit()
 
     return redirect('/login')
+
 
